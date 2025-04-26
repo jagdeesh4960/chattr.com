@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home | Chattr</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-black text-white min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-pink-600 p-4 flex justify-between items-center fixed top-0 right-0 w-full">
+    <a href="/" class="text-xl font-extrabold text-white tracking-wide">Chattr</a> <!-- Brand name here -->
+    <div>
+     
+    <% if (user) { %>
+        <a href="/post/create" class="text-md font-bold fixed right-0 top-20  bg-pink-600 text-white px-3 py-1 rounded ">+ create-post</a>
+        <div class="relative inline-block text-left">
+            <button onclick="toggleDropdown()" class="flex items-center space-x-2 focus:outline-none">
+              <img src="<%= user.profileImage %>" alt="Profile" class="w-8 h-8 rounded-full border-2 border-white" />
+            </button>
+           
+            <!-- Dropdown Menu -->
+            <div id="profileDropdown" class="hidden absolute p-4 right-0 mt-2 w-48 bg-white text-black  rounded-md shadow-lg border border-pink-600 z-50">
+                <a href="/post/my-posts" class="block px-3 py-1 rounded-lg text-md font-bold bg-pink-600 text-white hover:bg-pink-600 hover:text-white">Your Posts</a>
+                <a href="/logout" class="block px-4 py-2 mt-2 text-sm font-bold text-red-600 hover:bg-pink-600 rounded-lg hover:text-white">Logout</a>
+               
+              </div>
+          </div>
+          
+
+      <% } else { %>
+        <a href="/login" class="text-sm text-white underline mr-2">Login</a>
+        <a href="/register" class="text-sm text-white underline">Register</a>
+      <% } %>
+    </div>
+  </nav>
+
+  <!-- Feed -->
+  <div class="max-w-2xl mx-auto px-4 py-20">
+    <h2 class="text-2xl font-bold text-pink-500 mb-6 text-center">Your Feed</h2>
+
+    <% if (posts.length === 0) { %>
+      <p class="text-center text-gray-300">No posts yet. Be the first to post!</p>
+    <% } %>
+
+    <% posts.forEach(post => { %>
+      <div class="post bg-pink-100 rounded-lg shadow-md mb-6 overflow-hidden max-w-md mx-auto">
+        <!-- Post Image -->
+        <img src="<%= post.media.url %>" alt="post image" class="w-full h-64 object-cover">
+      
+        <!-- Post Content -->
+        <div class="p-4 text-black">
+          <h3 class="font-bold text-pink-600"><%= post.authorName %></h3>
+          <p class="mt-2"><%= post.caption %></p>
+      
+          <!-- Actions -->
+          <div class="mt-4 flex justify-between items-center">
+            <div class="flex gap-4 items-center">
+              <!-- Like Button -->
+              <button class="likeBtn text-pink-600 hover:text-pink-800 text-sm transition">
+                ❤️ <span class="likeText">Like</span>
+              </button>
+      
+              <!-- Comment Link -->
+              <a href="/post/<%= post._id %>" class="text-pink-600 font-semibold hover:underline text-sm">Comment</a>
+            </div>
+      
+            <!-- Date -->
+            <span class="text-sm text-gray-700"><%= post.createdAt.toDateString() %></span>
+          </div>
+        </div>
+      </div>
+      
+    <% }) %>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-pink-600 text-center py-4 mt-8">
+    <p class="text-white text-sm">© 2025 Chattr | All Rights Reserved</p>
+  </footer>
+
+<script> 
+  // Like button logic (works for all posts)
+  document.querySelectorAll('.post').forEach(post => {
+    const likeBtn = post.querySelector('.likeBtn');
+    const likeText = post.querySelector('.likeText');
+    let liked = false;
+
+    likeBtn?.addEventListener('click', () => {
+      liked = !liked;
+      likeText.textContent = liked ? 'Liked' : 'Like';
+      likeBtn.classList.toggle('text-pink-800');
+    });
+  });
+
+  // Profile dropdown toggle
+  function toggleDropdown() {
+    const dropdown = document.getElementById("profileDropdown");
+    dropdown.classList.toggle("hidden");
+  }
+
+  // Optional: Close dropdown when clicking outside
+  document.addEventListener("click", function (event) {
+    const dropdown = document.getElementById("profileDropdown");
+    const button = event.target.closest("button");
+    if (dropdown && !dropdown.contains(event.target) && !button) {
+      dropdown.classList.add("hidden");
+    }
+  });
+</script>
+</body>
+</html>
