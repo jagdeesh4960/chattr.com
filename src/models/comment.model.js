@@ -15,6 +15,10 @@ const commentSchema=mongoose.Schema({
         ref:'user',
         required:[true,"user is required"]
     },
+    username:{
+        type:String,
+        required:[true,"user is required"]
+    },
     parentComment:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'comment',

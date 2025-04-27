@@ -14,11 +14,14 @@ const upload = multer({
 export const handleFileUpload = upload.single("image");
 
 export const validateComment = [
-  body("post")
+  
+  body("postId")
     .notEmpty()
     .withMessage("Post is required")
     .custom((postId) => {
+      
       return mongoose.Types.ObjectId.isValid(postId);
+      
     })
     .withMessage("Invalid post id"),
 
@@ -32,6 +35,7 @@ export const validateComment = [
     .withMessage("Invalid parent comment id"),
 
   (req, res, next) => {
+    
     const err = validationResult(req);
     if (!err.isEmpty()) {
       return res.status(400).json({ errors: err.array() });

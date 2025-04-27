@@ -66,6 +66,7 @@ if(!user){
 }
 req.user = user;
 req.tokenData={token,...decoded}
+
 return next();
 }
 catch(err){

@@ -1,113 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Home | Chattr</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-black text-white min-h-screen">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Home | Chattr</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+  
 
-  <!-- Navbar -->
-  <nav class="bg-pink-600 p-4 flex justify-between items-center fixed top-0 right-0 w-full">
-    <a href="/" class="text-xl font-extrabold text-white tracking-wide">Chattr</a> <!-- Brand name here -->
-    <div>
-     
-    <% if (user) { %>
-        <a href="/post/create" class="text-md font-bold fixed right-0 top-20  bg-pink-600 text-white px-3 py-1 rounded ">+ create-post</a>
+    </style>
+  </head>
+  <body class="bg-black text-white min-h-screen flex flex-col relative">
+    <!-- Navbar -->
+    <nav
+      class="bg-pink-600 p-4 flex justify-between items-center fixed top-0 right-0 w-full z-50"
+    >
+      <a href="/home" class="text-xl font-extrabold text-white tracking-wide"
+        >Chattr</a
+      >
+      <div>
+        <% if (user) { %>
+        <a
+          href="/post/create"
+          class="text-md font-bold fixed right-0 top-24 bg-pink-600 text-white px-3 py-1 rounded"
+          >+ create-post</a
+        >
+        <a
+          href="/followers"
+          class="text-md font-bold fixed right-0 top-36 bg-pink-600 text-white px-3 py-1 rounded"
+          >your followers</a
+        >
         <div class="relative inline-block text-left">
-            <button onclick="toggleDropdown()" class="flex items-center space-x-2 focus:outline-none">
-              <img src="<%= user.profileImage %>" alt="Profile" class="w-8 h-8 rounded-full border-2 border-white" />
-            </button>
-           
-            <!-- Dropdown Menu -->
-            <div id="profileDropdown" class="hidden absolute p-4 right-0 mt-2 w-48 bg-white text-black  rounded-md shadow-lg border border-pink-600 z-50">
-                <a href="/post/my-posts" class="block px-3 py-1 rounded-lg text-md font-bold bg-pink-600 text-white hover:bg-pink-600 hover:text-white">Your Posts</a>
-                <a href="/logout" class="block px-4 py-2 mt-2 text-sm font-bold text-red-600 hover:bg-pink-600 rounded-lg hover:text-white">Logout</a>
-               
-              </div>
+          <button
+            onclick="toggleDropdown()"
+            class="flex items-end flex-col justify-center space-x-2 focus:outline-none"
+          >
+            <img
+              src="<%= user.profileImage %>"
+              alt="Profile"
+              class="w-8 h-8 rounded-full border-2 border-white"
+            />
+            <h1 class="font-bold"><%= user.username %></h1>
+          </button>
+          <!-- Dropdown Menu -->
+          <div
+            id="profileDropdown"
+            class="hidden absolute p-4 right-0 mt-2 w-48 bg-black text-white rounded-md shadow-lg border border-pink-600 z-50"
+          >
+            <h1
+              class="px-3 py-1 rounded-lg text-md font-bold text-white hover:bg-pink-600 hover:text-white mb-2"
+            >
+              <%= user.email %>
+            </h1>
+            <a
+              href="/post/my-posts"
+              class="block px-3 py-1 rounded-lg text-md font-bold text-white hover:bg-pink-600 hover:text-white"
+              >Your Posts</a
+            >
+            <a
+              href="/logout"
+              class="block px-4 py-2 mt-2 text-sm font-bold text-red-600 hover:bg-pink-600 rounded-lg hover:text-white"
+              >Logout</a
+            >
           </div>
-          
-
-      <% } else { %>
+        </div>
+        <% } else { %>
         <a href="/login" class="text-sm text-white underline mr-2">Login</a>
         <a href="/register" class="text-sm text-white underline">Register</a>
-      <% } %>
-    </div>
-  </nav>
+        <% } %>
+      </div>
+    </nav>
 
-  <!-- Feed -->
-  <div class="max-w-2xl mx-auto px-4 py-20">
-    <h2 class="text-2xl font-bold text-pink-500 mb-6 text-center">Your Feed</h2>
+    <!-- Feed -->
+    <div class="flex-grow w-full max-w-7xl mx-auto px-2 pt-24 pb-2">
+      <h2 class="text-2xl font-bold text-pink-500 mb-6 text-start">
+        Your Feed.
+      </h2>
 
-    <% if (posts.length === 0) { %>
-      <p class="text-center text-gray-300">No posts yet. Be the first to post!</p>
-    <% } %>
-
-    <% posts.forEach(post => { %>
-      <div class="post bg-pink-100 rounded-lg shadow-md mb-6 overflow-hidden max-w-md mx-auto">
+      <% if (posts.length === 0) { %>
+      <p class="text-center text-gray-300">
+        No posts yet. Be the first to post!
+      </p>
+      <% } %> <% posts.forEach(post => { %>
+      <div
+        class="post bg-pink-100 rounded-lg shadow-md mb-6 overflow-hidden w-full"
+      >
         <!-- Post Image -->
-        <img src="<%= post.media.url %>" alt="post image" class="w-full h-64 object-cover">
-      
+        <div class="w-full">
+          <img
+            src="<%= post.media.url %>"
+            alt="post image"
+            class="w-full object-cover max-h-[450px] sm:max-h-[600px] rounded-t-lg"
+          />
+        </div>
+
         <!-- Post Content -->
-        <div class="p-4 text-black">
-          <h3 class="font-bold text-pink-600"><%= post.authorName %></h3>
-          <p class="mt-2"><%= post.caption %></p>
-      
+        <div class="p-4 text-black flex flex-col">
+          <!-- Caption -->
+          <div class="mb-4">
+            <h3 class="font-bold text-pink-600 text-lg">
+              <%= post.authorName %>
+            </h3>
+            <p class="mt-1 break-words"><%= post.caption %></p>
+          </div>
+
           <!-- Actions -->
-          <div class="mt-4 flex justify-between items-center">
+          <div class="flex justify-between items-center mt-auto">
             <div class="flex gap-4 items-center">
               <!-- Like Button -->
-              <button class="likeBtn text-pink-600 hover:text-pink-800 text-sm transition">
+              <button
+                class="likeBtn text-pink-600 hover:text-pink-800 text-sm transition"
+              >
                 ❤️ <span class="likeText">Like</span>
               </button>
-      
+
               <!-- Comment Link -->
-              <a href="/post/<%= post._id %>" class="text-pink-600 font-semibold hover:underline text-sm">Comment</a>
+              <button
+                onclick="openCommentPanel(`<%= post._id %>`)"
+                class="text-pink-600 font-semibold hover:underline text-sm"
+              >
+                💬 Comment
+              </button>
             </div>
-      
+
             <!-- Date -->
-            <span class="text-sm text-gray-700"><%= post.createdAt.toDateString() %></span>
+            <span class="text-xs text-gray-700"
+              ><%= post.createdAt.toDateString() %></span
+            >
           </div>
         </div>
       </div>
-      
-    <% }) %>
+      <% }) %>
+    </div>
+
+    <!-- Comment Panel -->
+    <div
+    id="commentPanel"
+    class="hidden fixed inset-0 bg-black bg-opacity-60 h-[100vh] w-[100vw]  z-50"
+  >
+    <div 
+    id="problem"
+    class="bg-white w-full h-[90vh] top-10 relative overflow-y-auto rounded-t-lg p-4  ">
+
+      <button
+        onclick="closeCommentPanel()"
+        class="absolute right-4 text-black text-2xl"
+      >
+        &times;
+      </button>
+  
+      <h3 class="text-xl font-bold mb-4 text-pink-600">Comments</h3>
+  
+      <!-- Comments List -->
+        <% comments.forEach(comment => { %>
+          <div class="comment border-b pb-3 hover:bg-gray-100 cursor-pointer">
+            <div class="flex items-start gap-2">
+              <!-- Avatar -->
+              <div class="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                J
+              </div>
+              <div class="flex-1">
+                <!-- Comment Details -->
+                <p class="font-semibold text-pink-600 text-sm sm:text-base">
+                  <%= comment.username %>
+                </p>
+                <p class="text-xs text-gray-700 mt-1"><%= comment.text %></p>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+  
+      <!-- Add Comment -->
+      <div class="flex gap-2 pt-2 border-t border-gray-300">
+        <form action="/post/comment" method="post" class="flex w-full">
+          <!-- Hidden Inputs for Post ID and User ID -->
+          <input type="hidden" id="postId" name="postId" value="" />
+          <input
+            id="newCommentInput"
+            type="text"
+            name="text"
+            placeholder="Write a comment..."
+            class="flex-grow border border-pink-500 rounded-lg p-2 text-black"
+          />
+          <button
+            type="submit"
+            class="bg-pink-600 text-white px-3 py-1 font-bold rounded-lg"
+          >
+            Post
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
+  
 
-  <!-- Footer -->
-  <footer class="bg-pink-600 text-center py-4 mt-8">
-    <p class="text-white text-sm">© 2025 Chattr | All Rights Reserved</p>
-  </footer>
 
-<script> 
-  // Like button logic (works for all posts)
-  document.querySelectorAll('.post').forEach(post => {
-    const likeBtn = post.querySelector('.likeBtn');
-    const likeText = post.querySelector('.likeText');
-    let liked = false;
+        
 
-    likeBtn?.addEventListener('click', () => {
-      liked = !liked;
-      likeText.textContent = liked ? 'Liked' : 'Like';
-      likeBtn.classList.toggle('text-pink-800');
-    });
-  });
-
-  // Profile dropdown toggle
-  function toggleDropdown() {
-    const dropdown = document.getElementById("profileDropdown");
-    dropdown.classList.toggle("hidden");
-  }
-
-  // Optional: Close dropdown when clicking outside
-  document.addEventListener("click", function (event) {
-    const dropdown = document.getElementById("profileDropdown");
-    const button = event.target.closest("button");
-    if (dropdown && !dropdown.contains(event.target) && !button) {
-      dropdown.classList.add("hidden");
-    }
-  });
-</script>
-</body>
+     
+    <!-- Footer -->
+    <footer class="text-center py-4">
+      <p class="text-white text-sm">© 2025 Chattr | All Rights Reserved</p>
+    </footer>
+    <script>
+      let currentPostId = null;
+      
+      // Comment Panel Functions
+      function openCommentPanel(postId) {
+        currentPostId = postId;
+        document.getElementById("postId").value = postId;
+        document.getElementById("commentPanel").classList.remove("hidden");
+        loadComments(postId);
+      }
+      
+      function closeCommentPanel() {
+        document.getElementById("commentPanel").classList.add("hidden");
+        document.getElementById("newCommentInput").value = "";
+      }
+      
+      function loadComments(postId) {
+        // Simulate loading comments (use AJAX to fetch from backend)
+        const commentsList = document.getElementById("commentsList");
+      
+        comments.forEach((comment) => {
+          const commentDiv = document.createElement("div");
+          commentDiv.className = "comment border-b pb-3 hover:bg-gray-100 cursor-pointer";
+      
+          const avatarDiv = document.createElement("div");
+          avatarDiv.className = "flex items-start gap-2";
+          avatarDiv.innerHTML = `
+            <div class="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xs">J</div>
+            <div class="flex-1">
+              <p class="font-semibold text-pink-600 text-sm sm:text-base">${comment.username}</p>
+              <p class="text-xs text-gray-700 mt-1">${comment.text}</p>
+            </div>
+          `;
+          
+          commentDiv.appendChild(avatarDiv);
+          commentsList.appendChild(commentDiv);
+        });
+      }
+      
+      // Toggle Dropdown Function
+      function toggleDropdown() {
+        const dropdown = document.getElementById("profileDropdown");
+        dropdown.classList.toggle("hidden");
+      }
+      </script>
+      
+  </body>
 </html>

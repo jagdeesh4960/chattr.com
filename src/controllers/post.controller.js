@@ -3,6 +3,7 @@ import { uploadFile } from "../services/cloudStorage.service.js";
 import postModel from "../models/post.model.js";
 import likeModel from "../models/like.model.js";
 import commentModel from "../models/comment.model.js";
+import userModel from "../models/user.js";
 
 export const createPost = async (req, res, next) => {
   try {
@@ -145,35 +146,36 @@ export const getPostById=async (req, res) => {
 
 export const commentOnPost=async (req, res, next) => {
   try{
-
+   
+         
     let comment=null;
-    const {post,text,parentComment} = req.body;
-    const currentPost=await postModel.findById(post)
+    const {postId,text,parentComment} = req.body;
+    const userId= req.user._id;
+    const currentPost=await postModel.findById(postId)
+    const username=await userModel.findById(userId);
     if(!currentPost){
       return res.status(404).json({msg: "Post not found"});
     }
 
-    if(parentComment){
-      const isparentCommentExists=await commentModel.findById(parentComment)
-      comment=isparentCommentExists 
+    // if(parentComment){
+    //   const isparentCommentExists=await commentModel.findById(parentComment)
+    //   comment=isparentCommentExists 
 
-      if(!isparentCommentExists){
-        return res.status(404).json({msg: "Parent comment not found"});
-      }
-    }
+    //   if(!isparentCommentExists){
+    //     return res.status(404).json({msg: "Parent comment not found"});
+    //   }
+    // }
 
    const newComment=await commentModel.create({
-    post,
+    post:postId,
     text,
     user:req.user._id,
-    parentComment:comment.parentComment||parentComment
+    username:username.username
+    // parentComment:comment.parentComment||text
    })
 
    await currentPost.incrementCommentCount();
-   res.status(201).json({
-    comment:newComment,
-   message: "Comment created successfully"
-  });
+ res.redirect('/home')
 
   }
   catch(err){

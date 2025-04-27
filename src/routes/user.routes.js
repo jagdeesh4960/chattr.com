@@ -3,6 +3,8 @@ import * as userController from "../controllers/user.controller.js"
 const router = Router();
 import * as userMiddleware from "../middlewares/users.middlewares.js"
 import postModel from '../models/post.model.js';
+import commentModel from '../models/comment.model.js';
+import { log } from 'console';
 
 router.get('/register',(req,res)=>{
     res.render('register')
@@ -14,10 +16,26 @@ router.get('/',(req,res)=>{
 router.get('/logout',userMiddleware.authUser,userController.logOutUserController)
   
 router.get('/home',userMiddleware.authUser,async (req,res)=>{
+    const {postId}=req.body;
     const user=req.user;
     const posts= await postModel.find()
-    res.render('home',{user,posts})
+    const comments=await commentModel.find();
+    res.render('home',{user,posts,comments})
 })
+
+router.get('/followers',userMiddleware.authUser,async (req,res)=>{
+    const followingUser=[
+
+    ]
+    res.render('your-followers');
+
+}
+)
+
+
+
+
+
 router.post('/register',
     userMiddleware.registerUserValidation,
     userController.createUserController);

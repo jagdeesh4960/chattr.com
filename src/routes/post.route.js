@@ -45,6 +45,7 @@ router.get('/get/:postId',
 )
 
 router.post('/comment',
+
     userMiddleware.authUser,
     postMiddleware.validateComment,
     postController.commentOnPost
