@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notifications | Chattr</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <!-- CSS to Hide Scrollbar -->
+    <style>
+      .custom-scroll::-webkit-scrollbar {
+        width: 0px;
+        background: transparent; /* Chrome/Safari */
+      }
+      .custom-scroll {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+      }
+    </style>
+  </head>
+  <body class="bg-black text-white min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-pink-600 p-4 flex justify-between items-center">
+      <a href="/home" class="text-xl font-extrabold text-white tracking-wide">Chattr</a>
+      <div>
+        <a href="/home"
+          class="text-md font-bold text-white bg-pink-600 px-3 py-1 rounded">
+          Home
+        </a>
+      </div>
+    </nav>
+
+    <!-- Notifications Section -->
+    <div class="flex-grow w-full max-w-7xl mx-auto px-4 pt-24 pb-2">
+      <h2 class="text-2xl font-bold text-pink-500 mb-6">Notifications</h2>
+
+      <div class="flex justify-center">
+        <!-- Notifications Container -->
+        <div class="w-full md:w-2/3 flex flex-col gap-4 custom-scroll overflow-y-auto max-h-[70vh]">
+
+                 <!-- Accepted request Container -->
+
+          <% if (acceptedRequests.length === 0) { %>
+            <div class="text-center text-gray-400 text-lg mt-10">
+              No notifications available.
+            </div>
+          <% } else { %>
+            <%acceptedRequests.forEach(notification => { %>
+              <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between hover:bg-pink-50">
+                <!-- Profile Pic and Text -->
+                <div class="flex items-center gap-4">
+                  <img
+                    src="<%= notification.profileImage %>"
+                    alt="<%= notification.username %> profile"
+                    class="w-12 h-12 rounded-full border-2 border-pink-600"
+                  />
+                  <p class="text-sm text-black">
+                    <span class="font-bold text-pink-600 mr-4"><%= notification.username %></span>
+                    accepted your request.
+                  </p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-2">
+                  <a href="/remove-acceptedRequest/<%= notification.id %>"
+                    class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-1 px-4 rounded-md transition"
+                    onclick="acceptNotification('<%= notification.id %>')"
+                  >
+                    chat
+                  </a>
+                 
+                </div>
+              </div>
+            <% }) %>
+            <% } %>
+
+                 <!-- Rejected request Container -->
+
+                 <% if (rejectedRequests.length === 0) { %>
+                  <div class="text-center text-gray-400 text-lg mt-10">
+                    No notifications available.
+                  </div>
+                <% } else { %>
+                  <%rejectedRequests.forEach(notification => { %>
+                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between hover:bg-pink-50">
+                      <!-- Profile Pic and Text -->
+                      <div class="flex items-center gap-4">
+                        <img
+                          src="<%= notification.profileImage %>"
+                          alt="<%= notification.username %> profile"
+                          class="w-12 h-12 rounded-full border-2 border-pink-600"
+                        />
+                        <p class="text-sm text-black">
+                          <span class="font-bold text-pink-600 mr-4"><%= notification.username %></span>
+                          rejected your request.
+                        </p>
+                      </div>
+                      
+                      <!-- Action Buttons -->
+                      <div class="flex gap-2">
+                       
+                        <a href="/remove-rejectedRequest/<%= notification.id %>"
+                          class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1 px-4 rounded-md transition"
+                          onclick="rejectNotification('<%= notification.id %>')"
+                        >
+                          Remove
+                        </a>
+                      </div>
+                    </div>
+                  <% }) %>
+                  <% } %>
+
+           <!-- follow request Container -->
+
+          <% if (notifications.length === 0) { %>
+            <div class="text-center text-gray-400 text-lg mt-10">
+              No notifications available.
+            </div>
+          <% } else { %>
+            <% notifications.forEach(notification => { %>
+              <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between hover:bg-pink-50">
+                <!-- Profile Pic and Text -->
+                <div class="flex items-center gap-4">
+                  <img
+                    src="<%= notification.profileImage %>"
+                    alt="<%= notification.username %> profile"
+                    class="w-12 h-12 rounded-full border-2 border-pink-600"
+                  />
+                  <p class="text-sm text-black">
+                    <span class="font-bold text-pink-600 mr-4"><%= notification.username %></span>
+                    wants to follow you.
+                  </p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-2">
+                  <a href="/accept-notification/<%= notification.id %>"
+                    class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-1 px-4 rounded-md transition"
+                    onclick="acceptNotification('<%= notification.id %>')"
+                  >
+                    Accept
+                  </a>
+                  <a href="/reject-notification/<%= notification.id %>"
+                    class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1 px-4 rounded-md transition"
+                    onclick="rejectNotification('<%= notification.id %>')"
+                  >
+                    Reject
+                  </a>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+      
+    </div>
+
+    <footer class="text-center py-4 mt-auto bg-black text-white">
+      <p class="text-sm">© 2025 Chattr | All Rights Reserved</p>
+    </footer>
+
+    <script>
+      function acceptNotification(notificationId) {
+        // Simulate accepting notification (you should make an API call here)
+        alert(`Accepted notification ID: ${notificationId}`);
+      }
+
+      function rejectNotification(notificationId) {
+        // Simulate rejecting notification (you should make an API call here)
+        alert(`Rejected notification ID: ${notificationId}`);
+      }
+    </script>
+  </body>
+</html>
