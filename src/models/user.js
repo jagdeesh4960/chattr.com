@@ -30,8 +30,25 @@ const userSchema=new mongoose.Schema({
         select:false
         
     }
+    ,followers:[{
+       type: mongoose.Schema.Types.ObjectId,
+       ref: "user",
+    }]
 
-
+    ,requests:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+     }]
+     ,AcceptedReq:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+     }]
+     ,RejectedReq:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+     }]
+ 
+ 
 
 })
 

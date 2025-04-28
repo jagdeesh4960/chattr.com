@@ -8,12 +8,30 @@
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
     />
+    <!-- CSS to Hide Scrollbar -->
     <style>
-  
+      .custom-scroll::-webkit-scrollbar {
+        width: 0px;
+        background: transparent; /* Chrome/Safari */
+      }
+      .custom-scroll {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+      }
 
+      html::-webkit-scrollbar {
+        width: 0px;
+        background: transparent; /* Chrome/Safari */
+      }
+      html {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+      }
     </style>
   </head>
-  <body class="bg-black text-white min-h-screen flex flex-col relative">
+  <body
+    class=".body overflow-y-auto bg-black text-white min-h-screen flex flex-col relative"
+  >
     <!-- Navbar -->
     <nav
       class="bg-pink-600 p-4 flex justify-between items-center fixed top-0 right-0 w-full z-50"
@@ -80,134 +98,183 @@
         Your Feed.
       </h2>
 
-      <% if (posts.length === 0) { %>
-      <p class="text-center text-gray-300">
-        No posts yet. Be the first to post!
-      </p>
-      <% } %> <% posts.forEach(post => { %>
       <div
-        class="post bg-pink-100 rounded-lg shadow-md mb-6 overflow-hidden w-full"
+        class="flex flex-col md:flex-row gap-4"
+        style="height: calc(100vh - 120px)"
       >
-        <!-- Post Image -->
-        <div class="w-full">
-          <img
-            src="<%= post.media.url %>"
-            alt="post image"
-            class="w-full object-cover max-h-[450px] sm:max-h-[600px] rounded-t-lg"
-          />
+        <!-- Posts Section -->
+        <div class="w-full md:w-[78%] flex flex-col overflow-hidden">
+          <% if (posts.length === 0) { %>
+          <p
+            class="text-center text-gray-300 flex-grow flex items-center justify-center min-h-[50vh]"
+          >
+            No posts yet. Be the first to post!
+          </p>
+          <% } %>
+
+          <!-- Posts Scrollable Area -->
+          <div class="flex-1 overflow-y-auto pr-2 custom-scroll">
+            <% posts.forEach(post => { %>
+            <div
+              class="post bg-pink-100 rounded-lg shadow-md mb-6 overflow-hidden w-full"
+            >
+              <div
+                class="w-full bg-white p-2 flex justify-start gap-4 items-center"
+              >
+                <h3 class="font-bold text-pink-600 text-lg">
+                  <%= post.authorName %>
+                </h3>
+
+                <a
+                  href="/remove-follower/<%=post.author._id%>"
+                  class="bg-pink-500 hover:bg-pink-600 text-white text-xs md:text-sm font-bold py-1 px-4 rounded-md transition duration-300"
+                >
+                  Unfollow
+                </a>
+              </div>
+
+              <div class="w-full">
+                <img
+                  src="<%= post.media.url %>"
+                  alt="post image"
+                  class="w-full object-cover max-h-[450px] sm:max-h-[600px] rounded-t-lg"
+                />
+              </div>
+
+              <div class="p-4 text-black flex flex-col">
+                <div class="mb-4">
+                  <p class="mt-1 break-words"><%= post.caption %></p>
+                </div>
+
+                <div class="flex justify-between items-center mt-auto">
+                  <div class="flex gap-4 items-center">
+                    <button
+                      class="likeBtn text-pink-600 hover:text-pink-800 text-sm transition"
+                    >
+                      ❤️ <span class="likeText">Like</span>
+                    </button>
+
+                    <button
+                      onclick="openCommentPanel(`<%= post._id %>`)"
+                      class="text-pink-600 font-semibold hover:underline text-sm"
+                    >
+                      💬 Comment
+                    </button>
+                  </div>
+
+                  <span class="text-xs text-gray-700">
+                    <%= post.createdAt.toDateString() %>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+          </div>
         </div>
 
-        <!-- Post Content -->
-        <div class="p-4 text-black flex flex-col">
-          <!-- Caption -->
-          <div class="mb-4">
-            <h3 class="font-bold text-pink-600 text-lg">
-              <%= post.authorName %>
-            </h3>
-            <p class="mt-1 break-words"><%= post.caption %></p>
-          </div>
-
-          <!-- Actions -->
-          <div class="flex justify-between items-center mt-auto">
-            <div class="flex gap-4 items-center">
-              <!-- Like Button -->
-              <button
-                class="likeBtn text-pink-600 hover:text-pink-800 text-sm transition"
+        <!-- Suggestions Section -->
+        <div class="w-full md:w-[22%] flex flex-col overflow-hidden">
+          <!-- Suggestions Scrollable Area -->
+          <div class="flex-1 overflow-y-auto pl-2 custom-scroll">
+            <div class="p-4 border-t md:border-t-0 md:border-l border-pink-600">
+              <h2 class="text-base md:text-lg font-bold mb-4">Suggestions</h2>
+              <% suggestionUsers.forEach(function(user) { %>
+              <div
+                class="flex items-center justify-between p-2 hover:bg-pink-700 cursor-pointer rounded-md"
               >
-                ❤️ <span class="likeText">Like</span>
-              </button>
-
-              <!-- Comment Link -->
-              <button
-                onclick="openCommentPanel(`<%= post._id %>`)"
-                class="text-pink-600 font-semibold hover:underline text-sm"
-              >
-                💬 Comment
-              </button>
+                <div class="flex items-center">
+                  <img
+                    src="<%= user.profileImage %>"
+                    alt="Profile"
+                    class="w-8 h-8 rounded-full border-2 border-white mr-3"
+                  />
+                  <p class="font-semibold text-sm md:text-base">
+                    <%= user.username %>
+                  </p>
+                </div>
+                <a
+                  href="/add-follower/<%=user._id%>"
+                  class="bg-pink-500 hover:bg-pink-600 text-white text-xs md:text-sm font-bold py-1 px-4 rounded-md transition duration-300"
+                >
+                  +Follow
+                </a>
+              </div>
+              <% }); %>
             </div>
-
-            <!-- Date -->
-            <span class="text-xs text-gray-700"
-              ><%= post.createdAt.toDateString() %></span
-            >
           </div>
         </div>
       </div>
-      <% }) %>
     </div>
 
     <!-- Comment Panel -->
     <div
-    id="commentPanel"
-    class="hidden fixed inset-0 bg-black bg-opacity-60 h-[100vh] w-[100vw]  z-50"
-  >
-    <div 
-    id="problem"
-    class="bg-white w-full h-[90vh] top-10 relative overflow-y-auto rounded-t-lg p-4  ">
-
-      <button
-        onclick="closeCommentPanel()"
-        class="absolute right-4 text-black text-2xl"
+      id="commentPanel"
+      class="hidden fixed inset-0 bg-black bg-opacity-60 h-[100vh] w-[100vw] z-50"
+    >
+      <div
+        id="problem"
+        class="bg-white w-full h-[90vh] top-10 relative overflow-y-auto rounded-t-lg p-4"
       >
-        &times;
-      </button>
-  
-      <h3 class="text-xl font-bold mb-4 text-pink-600">Comments</h3>
-  
-      <!-- Comments List -->
+        <button
+          onclick="closeCommentPanel()"
+          class="absolute right-4 text-black text-2xl"
+        >
+          &times;
+        </button>
+
+        <h3 class="text-xl font-bold mb-4 text-pink-600">Comments</h3>
+
+        <!-- Comments List -->
         <% comments.forEach(comment => { %>
-          <div class="comment border-b pb-3 hover:bg-gray-100 cursor-pointer">
-            <div class="flex items-start gap-2">
-              <!-- Avatar -->
-              <div class="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                J
-              </div>
-              <div class="flex-1">
-                <!-- Comment Details -->
-                <p class="font-semibold text-pink-600 text-sm sm:text-base">
-                  <%= comment.username %>
-                </p>
-                <p class="text-xs text-gray-700 mt-1"><%= comment.text %></p>
-              </div>
+        <div class="comment border-b pb-3 hover:bg-gray-100 cursor-pointer">
+          <div class="flex items-start gap-2">
+            <!-- Avatar -->
+            <div
+              class="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xs"
+            >
+              J
+            </div>
+            <div class="flex-1">
+              <!-- Comment Details -->
+              <p class="font-semibold text-pink-600 text-sm sm:text-base">
+                <%= comment.username %>
+              </p>
+              <p class="text-xs text-gray-700 mt-1"><%= comment.text %></p>
             </div>
           </div>
+        </div>
         <% }) %>
-  
-      <!-- Add Comment -->
-      <div class="flex gap-2 pt-2 border-t border-gray-300">
-        <form action="/post/comment" method="post" class="flex w-full">
-          <!-- Hidden Inputs for Post ID and User ID -->
-          <input type="hidden" id="postId" name="postId" value="" />
-          <input
-            id="newCommentInput"
-            type="text"
-            name="text"
-            placeholder="Write a comment..."
-            class="flex-grow border border-pink-500 rounded-lg p-2 text-black"
-          />
-          <button
-            type="submit"
-            class="bg-pink-600 text-white px-3 py-1 font-bold rounded-lg"
-          >
-            Post
-          </button>
-        </form>
+
+        <!-- Add Comment -->
+        <div class="flex gap-2 pt-2 border-t border-gray-300">
+          <form action="/post/comment" method="post" class="flex w-full">
+            <!-- Hidden Inputs for Post ID and User ID -->
+            <input type="hidden" id="postId" name="postId" value="" />
+            <input
+              id="newCommentInput"
+              type="text"
+              name="text"
+              placeholder="Write a comment..."
+              class="flex-grow border border-pink-500 rounded-lg p-2 text-black"
+            />
+            <button
+              type="submit"
+              class="bg-pink-600 text-white px-3 py-1 font-bold rounded-lg"
+            >
+              Post
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-  
 
-
-        
-
-     
     <!-- Footer -->
     <footer class="text-center py-4">
       <p class="text-white text-sm">© 2025 Chattr | All Rights Reserved</p>
     </footer>
     <script>
       let currentPostId = null;
-      
+
       // Comment Panel Functions
       function openCommentPanel(postId) {
         currentPostId = postId;
@@ -215,20 +282,21 @@
         document.getElementById("commentPanel").classList.remove("hidden");
         loadComments(postId);
       }
-      
+
       function closeCommentPanel() {
         document.getElementById("commentPanel").classList.add("hidden");
         document.getElementById("newCommentInput").value = "";
       }
-      
+
       function loadComments(postId) {
         // Simulate loading comments (use AJAX to fetch from backend)
         const commentsList = document.getElementById("commentsList");
-      
+
         comments.forEach((comment) => {
           const commentDiv = document.createElement("div");
-          commentDiv.className = "comment border-b pb-3 hover:bg-gray-100 cursor-pointer";
-      
+          commentDiv.className =
+            "comment border-b pb-3 hover:bg-gray-100 cursor-pointer";
+
           const avatarDiv = document.createElement("div");
           avatarDiv.className = "flex items-start gap-2";
           avatarDiv.innerHTML = `
@@ -238,18 +306,17 @@
               <p class="text-xs text-gray-700 mt-1">${comment.text}</p>
             </div>
           `;
-          
+
           commentDiv.appendChild(avatarDiv);
           commentsList.appendChild(commentDiv);
         });
       }
-      
+
       // Toggle Dropdown Function
       function toggleDropdown() {
         const dropdown = document.getElementById("profileDropdown");
         dropdown.classList.toggle("hidden");
       }
-      </script>
-      
+    </script>
   </body>
 </html>

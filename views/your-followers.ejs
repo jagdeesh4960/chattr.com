@@ -5,60 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chattr - Followers</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+  <style>
+       html::-webkit-scrollbar {
+        width: 0px;
+        background: transparent; /* Chrome/Safari */
+      }
+      html {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+      }
+  </style>
+
 </head>
 <body class="bg-black text-white font-sans">
 
   <!-- Navbar -->
   <nav class="bg-pink-600 p-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Chattr</h1>
-    <div>
-      <img src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white">
-    </div>
+    <h1 class="text-lg md:text-xl font-bold">Chattr</h1>
+    <a href="/home" class="bg-pink-600 text-white font-bold hover:text-gray-300">Home</a>
   </nav>
 
   <!-- Main Content -->
   <div class="flex flex-col md:flex-row h-[90vh]">
 
     <!-- Sidebar Followers and Suggestions -->
-    <div class="w-full md:w-1/3 border-r border-pink-600 overflow-y-auto">
+    <div class="w-full md:w-1/4 border-r border-pink-600 overflow-y-auto">
       <div class="p-4">
-        <h2 class="text-xl font-bold mb-4">Following</h2>
+        <h2 class="text-base md:text-lg font-bold mb-4">Following</h2>
         <% followingUsers.forEach(function(follower) { %>
-          <div onclick="openChat('<%= follower.username %>', '<%= follower.profileImage %>')" class="flex items-center p-2 hover:bg-pink-700 cursor-pointer rounded-md">
-            <img src="<%= follower.profileImage %>" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white mr-3">
-            <p class="font-semibold"><%= follower.username %></p>
+          <div onclick="openChat('<%= follower.username %>', '<%= follower.profileImage %>','<%=follower._id%>')" class="flex items-center p-2 hover:bg-pink-700 cursor-pointer rounded-md">
+            <img src="<%= follower.profileImage %>" alt="Profile" class="w-8 h-8 rounded-full border-2 border-white mr-3">
+            <p class="font-semibold text-sm md:text-base"><%= follower.username %></p>
           </div>
         <% }); %>
       </div>
 
-      <div class="p-4 mt-6 border-t border-pink-600">
-        <h2 class="text-xl font-bold mb-4">Suggestions</h2>
-        <% suggestionUsers.forEach(function(user) { %>
-          <div class="flex items-center p-2 hover:bg-pink-700 cursor-pointer rounded-md">
-            <img src="<%= user.profileImage %>" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white mr-3">
-            <div>
-              <p class="font-semibold"><%= user.username %></p>
-              <button class="text-sm text-pink-400 hover:underline">Follow</button>
-            </div>
-          </div>
-        <% }); %>
-      </div>
+      
     </div>
 
     <!-- Chat Area -->
-    <div id="chatArea" class="hidden w-full md:w-2/3 flex flex-col h-full bg-white text-black">
-      
+    <div id="chatArea" class="hidden w-full md:w-3/4 flex flex-col h-full bg-white text-black">
+
       <!-- Chat Header -->
-      <div class="flex items-center justify-between p-4 bg-pink-600 text-white">
+      <div class="flex items-center justify-between p-4 bg-black text-white relative">
         <div class="flex items-center gap-3">
-          <img id="chatUserImage" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white">
-          <h2 id="chatUsername" class="font-bold text-lg"></h2>
+          <img id="chatUserImage" src="" alt="Profile" class="w-8 h-8 rounded-full border-2 border-white">
+          <h2 id="chatUsername" class="font-bold text-base md:text-lg"></h2>
         </div>
         <div class="flex items-center gap-4">
-          <button><i class="fas fa-phone text-xl"></i></button>
-          <button><i class="fas fa-video text-xl"></i></button>
-          <button class="bg-white text-pink-600 px-3 py-1 rounded-full text-sm font-semibold hover:bg-pink-100">Unfollow</button>
+          <button><i class="ri-phone-fill text-lg md:text-xl"></i></button>
+          <button><i class="ri-video-chat-fill text-lg md:text-xl"></i></button>
+          <form action="/remove-follower" method="post">
+            <input  id="unfollowbtn"  value="" name="followerId" class="hidden" >
+            </input> 
+            <button  class="bg-pink-500 hover:bg-pink-600 text-white text-xs md:text-sm font-bold py-1 px-4 rounded-md transition duration-300">Unfollow</button>
+          </form>
         </div>
+        <!-- Close Chat Button -->
+        <button onclick="closeChat()" class="absolute top-16 right-0 px-2 py-1 rounded-md  text-sm  text-white bg-green-400  hover:text-pink-600 ">
+         close
+        </button>
       </div>
 
       <!-- Chat Messages -->
@@ -68,24 +76,27 @@
 
       <!-- Chat Input -->
       <div class="flex p-4 border-t border-pink-600">
-        <input id="messageInput" type="text" placeholder="Type a message..." class="flex-1 p-2 rounded-l-md border-none focus:outline-none bg-gray-200">
-        <button onclick="sendMessage()" class="bg-pink-600 text-white px-4 rounded-r-md hover:bg-pink-700">Send</button>
+        <input id="messageInput" type="text" placeholder="Type a message..." class="flex-1 p-2 rounded-l-md border-none focus:outline-none bg-gray-200 text-sm">
+        <button onclick="sendMessage()" class="bg-pink-600 text-white px-4 rounded-r-md hover:bg-pink-700 text-sm">Send</button>
       </div>
 
     </div>
 
   </div>
 
-  <!-- FontAwesome for icons -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
   <!-- JS for handling chat -->
   <script>
-    function openChat(username, profileImage) {
+    function openChat(username, profileImage,followerId) {
+      document.getElementById('unfollowbtn').value=followerId;
       document.getElementById('chatArea').classList.remove('hidden');
       document.getElementById('chatUsername').innerText = username;
       document.getElementById('chatUserImage').src = profileImage;
       document.getElementById('chatMessages').innerHTML = '';
+
+    }
+
+    function closeChat() {
+      document.getElementById('chatArea').classList.add('hidden');
     }
 
     function sendMessage() {
@@ -94,7 +105,7 @@
       if (messageText !== "") {
         const messageDiv = document.createElement('div');
         messageDiv.className = "text-right";
-        messageDiv.innerHTML = `<span class="inline-block bg-pink-600 text-white px-4 py-2 rounded-full max-w-xs">${messageText}</span>`;
+        messageDiv.innerHTML = `<span class="inline-block bg-pink-600 text-white px-4 py-2 rounded-full max-w-xs text-sm">${messageText}</span>`;
         document.getElementById('chatMessages').appendChild(messageDiv);
         input.value = '';
         document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
