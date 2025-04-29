@@ -75,6 +75,35 @@ function initSocket(server) {
       socket.emit("messages-history", messages);
     });
 
+
+
+    // 📞 Video Call Request
+    socket.on("call-user", ({ to, from, name }) => {
+      io.to(to).emit("call-made", { from, name });
+    });
+
+    // ✅ Call Accepted
+    socket.on("accept-call", ({ to, from }) => {
+      io.to(to).emit("call-accepted", { from });
+    });
+
+    // ❌ Call Rejected
+    socket.on("reject-call", ({ to }) => {
+      io.to(to).emit("call-rejected");
+    });
+
+    // Optional: clean-up on disconnect (not required, but helps debugging)
+    socket.on("disconnect", () => {
+      console.log("User disconnected:", user.username);
+    });
+
+
+    // 📴 Call Ended
+socket.on("end-call", ({ to }) => {
+  io.to(to).emit("end-call");
+});
+
+
     socket.on("disconnect", () => {
       console.log("User disconnected:", user.username);
     });
