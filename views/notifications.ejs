@@ -38,51 +38,46 @@
 
       <div class="flex justify-center">
         <!-- Notifications Container -->
+
         <div class="w-full md:w-2/3 flex flex-col gap-4 custom-scroll overflow-y-auto max-h-[70vh]">
-
-                 <!-- Accepted request Container -->
-
-          <% if (acceptedRequests.length === 0) { %>
+          <% if (acceptedRequests.length === 0 && notifications.length===0 && rejectedRequests.length===0) { %>
             <div class="text-center text-gray-400 text-lg mt-10">
               No notifications available.
             </div>
-          <% } else { %>
-            <%acceptedRequests.forEach(notification => { %>
-              <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between hover:bg-pink-50">
-                <!-- Profile Pic and Text -->
-                <div class="flex items-center gap-4">
-                  <img
-                    src="<%= notification.profileImage %>"
-                    alt="<%= notification.username %> profile"
-                    class="w-12 h-12 rounded-full border-2 border-pink-600"
-                  />
-                  <p class="text-sm text-black">
-                    <span class="font-bold text-pink-600 mr-4"><%= notification.username %></span>
-                    accepted your request.
-                  </p>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="flex gap-2">
-                  <a href="/remove-acceptedRequest/<%= notification.id %>"
-                    class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-1 px-4 rounded-md transition"
-                    onclick="acceptNotification('<%= notification.id %>')"
-                  >
-                    chat
-                  </a>
-                 
-                </div>
+          <% }%>
+                 <!-- Accepted request Container -->
+         <% if (!acceptedRequests.length !== 0) { %>
+          <%acceptedRequests.forEach(notification => { %>
+            <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between hover:bg-pink-50">
+              <!-- Profile Pic and Text -->
+              <div class="flex items-center gap-4">
+                <img
+                  src="<%= notification.profileImage %>"
+                  alt="<%= notification.username %> profile"
+                  class="w-12 h-12 rounded-full border-2 border-pink-600"
+                />
+                <p class="text-sm text-black">
+                  <span class="font-bold text-pink-600 mr-4"><%= notification.username %></span>
+                  accepted your request.
+                </p>
               </div>
-            <% }) %>
-            <% } %>
+              
+              <!-- Action Buttons -->
+              <div class="flex gap-2">
+                <a href="/remove-acceptedRequest/<%= notification.id %>"
+                  class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-1 px-4 rounded-md transition"
+                >
+                  ok
+                </a>
+               
+              </div>
+            </div>
+          <% }) %>
+          <%}%>
 
                  <!-- Rejected request Container -->
 
-                 <% if (rejectedRequests.length === 0) { %>
-                  <div class="text-center text-gray-400 text-lg mt-10">
-                    No notifications available.
-                  </div>
-                <% } else { %>
+                 <% if (rejectedRequests.length !== 0) { %>
                   <%rejectedRequests.forEach(notification => { %>
                     <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between hover:bg-pink-50">
                       <!-- Profile Pic and Text -->
@@ -100,26 +95,21 @@
                       
                       <!-- Action Buttons -->
                       <div class="flex gap-2">
-                       
                         <a href="/remove-rejectedRequest/<%= notification.id %>"
-                          class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1 px-4 rounded-md transition"
-                          onclick="rejectNotification('<%= notification.id %>')"
+                          class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-1 px-4 rounded-md transition"
                         >
-                          Remove
+                          ok
                         </a>
+                       
                       </div>
                     </div>
                   <% }) %>
-                  <% } %>
+                  <%}%>
 
            <!-- follow request Container -->
 
-          <% if (notifications.length === 0) { %>
-            <div class="text-center text-gray-400 text-lg mt-10">
-              No notifications available.
-            </div>
-          <% } else { %>
-            <% notifications.forEach(notification => { %>
+           <% if (!notifications.length !== 0) { %>
+            <%notifications.forEach(notification => { %>
               <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between hover:bg-pink-50">
                 <!-- Profile Pic and Text -->
                 <div class="flex items-center gap-4">
@@ -130,7 +120,7 @@
                   />
                   <p class="text-sm text-black">
                     <span class="font-bold text-pink-600 mr-4"><%= notification.username %></span>
-                    wants to follow you.
+                   wants to follow you
                   </p>
                 </div>
                 
@@ -138,20 +128,19 @@
                 <div class="flex gap-2">
                   <a href="/accept-notification/<%= notification.id %>"
                     class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-1 px-4 rounded-md transition"
-                    onclick="acceptNotification('<%= notification.id %>')"
                   >
-                    Accept
+                   Accept
                   </a>
                   <a href="/reject-notification/<%= notification.id %>"
-                    class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1 px-4 rounded-md transition"
-                    onclick="rejectNotification('<%= notification.id %>')"
+                    class="bg-red-600 hover:bg-pink-700 text-white font-semibold py-1 px-4 rounded-md transition"
                   >
-                    Reject
+                   Reject
                   </a>
+                 
                 </div>
               </div>
             <% }) %>
-          <% } %>
+            <%}%>
         </div>
       </div>
       

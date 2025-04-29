@@ -4,6 +4,7 @@ const router = Router();
 import * as userMiddleware from "../middlewares/users.middlewares.js";
 import postModel from "../models/post.model.js";
 import commentModel from "../models/comment.model.js";
+import messageModel from "../models/message.model.js";
 import { log } from "console";
 import userModel from "../models/user.js";
 
@@ -36,8 +37,6 @@ router.get(
     }
   }
 );
-
-
 
 router.post("/remove-follower", userMiddleware.authUser, async (req, res) => {
   try {
@@ -92,7 +91,6 @@ router.get('/notifications',userMiddleware.authUser,
     try {
       const followUserId = req.params.userId;
       const currentUserId = req.user._id;
-
       const followUser=await userModel.findById(followUserId);
       const currentUser = await userModel.findById(currentUserId).populate('requests');
       const AcceptedReq = await userModel.findById(currentUserId).populate('AcceptedReq');
@@ -297,6 +295,7 @@ router.get("/home", userMiddleware.authUser, async (req, res) => {
 router.get("/followers", userMiddleware.authUser, async (req, res) => {
   try {
     const userId = req.user._id;
+    const token=req.cookies.token;  
 
     const user = await userModel.findById(userId).populate("followers");
 
@@ -312,7 +311,7 @@ router.get("/followers", userMiddleware.authUser, async (req, res) => {
       })
       .limit(10);
 
-    res.render("your-followers", { followingUsers, suggestionUsers });
+    res.render("your-followers", { followingUsers,userId, suggestionUsers,token });
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");
@@ -342,5 +341,30 @@ router.get(
   userMiddleware.authUser,
   userController.getMessageController
 );
+
+
+router.get('/messages/:receiverId', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+    const decoded = verifyToken(token);
+    const userId = decoded.id;
+    const receiverId = req.params.receiverId;
+
+    const messages = await messageModel.find({
+      $or: [
+        { sender: userId, receiver: receiverId },
+        { sender: receiverId, receiver: userId }
+      ]
+    }).sort({ createdAt: 1 });
+
+    res.json(messages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 export default router;

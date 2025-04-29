@@ -1,3 +1,4 @@
+import { timeStamp } from "console";
 import mongoose from "mongoose";
 
 const messageSchema=mongoose.Schema({
@@ -15,7 +16,7 @@ const messageSchema=mongoose.Schema({
         type:String,
         required:[true,"text is required"],
     }
-})
+},{timeStamp:true})
 
 const messageModel=mongoose.model('message',messageSchema)
 

@@ -35,9 +35,12 @@
       <div class="p-4">
         <h2 class="text-base md:text-lg font-bold mb-4">Following</h2>
         <% followingUsers.forEach(function(follower) { %>
-          <div onclick="openChat('<%= follower.username %>', '<%= follower.profileImage %>','<%=follower._id%>')" class="flex items-center p-2 hover:bg-pink-700 cursor-pointer rounded-md">
+          <div onclick="openChat('<%= follower.username %>', '<%= follower.profileImage %>','<%=follower._id%>')
+          " class="flex items-center p-2 hover:bg-pink-700 cursor-pointer rounded-md">
             <img src="<%= follower.profileImage %>" alt="Profile" class="w-8 h-8 rounded-full border-2 border-white mr-3">
             <p class="font-semibold text-sm md:text-base"><%= follower.username %></p>
+           <h1 id="userId" class="hidden" value="<%=userId %>"><%= userId %></h1>
+           
           </div>
         <% }); %>
       </div>
@@ -85,33 +88,73 @@
   </div>
 
   <!-- JS for handling chat -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+<!-- Add this inside your <script> tag -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script>
-    function openChat(username, profileImage,followerId) {
-      document.getElementById('unfollowbtn').value=followerId;
+    let receiverId = '';
+    let senderId = document.getElementById('userId').textContent.trim();
+    const socket = io({ query: { userId: senderId } }); // initialize socket
+  
+    function openChat(username, profileImage, followerId) {
+      receiverId = followerId;
+      document.getElementById('unfollowbtn').value = followerId;
       document.getElementById('chatArea').classList.remove('hidden');
       document.getElementById('chatUsername').innerText = username;
       document.getElementById('chatUserImage').src = profileImage;
       document.getElementById('chatMessages').innerHTML = '';
-
+  
+      socket.emit('load-messages', { sender: senderId, receiver: receiverId });
     }
-
-    function closeChat() {
-      document.getElementById('chatArea').classList.add('hidden');
-    }
-
+  
+    socket.on('messages-history', (messages) => {
+      const chatMessages = document.getElementById('chatMessages');
+      messages.forEach((msg) => {
+        const div = document.createElement('div');
+        const isSender = msg.sender === senderId;
+        div.className = isSender ? 'text-right' : 'text-left';
+        div.innerHTML = `<span class="inline-block ${
+          isSender ? 'bg-pink-600 text-white' : 'bg-gray-300 text-black'
+        } px-4 py-2 rounded-full max-w-xs text-sm">${msg.text}</span>`;
+        chatMessages.appendChild(div);
+      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+  
+    socket.on('chat-message', (data) => {
+      if (data.sender === receiverId) {
+        const div = document.createElement('div');
+        div.className = 'text-left';
+        div.innerHTML = `<span class="inline-block bg-gray-300 text-black px-4 py-2 rounded-full max-w-xs text-sm">${data.text}</span>`;
+        document.getElementById('chatMessages').appendChild(div);
+      }
+    });
+  
     function sendMessage() {
       const input = document.getElementById('messageInput');
       const messageText = input.value.trim();
-      if (messageText !== "") {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = "text-right";
-        messageDiv.innerHTML = `<span class="inline-block bg-pink-600 text-white px-4 py-2 rounded-full max-w-xs text-sm">${messageText}</span>`;
-        document.getElementById('chatMessages').appendChild(messageDiv);
-        input.value = '';
-        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-      }
+      if (!messageText) return;
+  
+      const messageDiv = document.createElement('div');
+      messageDiv.className = "text-right";
+      messageDiv.innerHTML = `<span class="inline-block bg-pink-600 text-white px-4 py-2 rounded-full max-w-xs text-sm">${messageText}</span>`;
+      document.getElementById('chatMessages').appendChild(messageDiv);
+  
+      socket.emit("chat-message", {
+        sender: senderId,
+        receiver: receiverId,
+        text: messageText
+      });
+  
+      input.value = '';
+      document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+    }
+  
+    function closeChat() {
+      document.getElementById('chatArea').classList.add('hidden');
     }
   </script>
-
+  
 </body>
 </html>
